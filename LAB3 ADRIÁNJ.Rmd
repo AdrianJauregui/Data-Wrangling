@@ -1,0 +1,155 @@
+---
+title: "Lab4"
+author: "Adrián Jáuregui"
+date: "2024-09-08"
+output: github_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(plotly)
+library(dplyr)
+actors <- read.csv("actors.csv")
+directorsg <- read.csv("directors_genres.csv")
+directors <- read.csv("directors.csv")
+moviesd <- read.csv("movies_directors.csv")
+moviesg <- read.csv("movies_genres.csv")
+movies <- read.csv("movies.csv")
+roles <- read.csv("roles.csv")
+
+
+#1
+
+num_movie <- movies %>%
+                summarise(num_movies = n_distinct(id))
+print("Número de peliculas")
+print(num_movie)
+
+num_director <- directors %>%
+                summarise(num_directors = n_distinct(id))
+
+print("Número de directores")
+print(num_director)
+
+#2
+genres_director <- directorsg %>%
+  group_by(director_id) %>%
+  summarise(num_genres = n_distinct(genre)) %>%
+  ungroup()%>%
+  summarise(general_average = mean(num_genres, na.rm = TRUE))
+
+print("Promedio de generos por director")
+print(genres_director)
+
+#3
+
+num_movie_for_role <- roles %>%
+                group_by(role)%>%
+                summarise(num_movies = n_distinct(movie_id)) 
+
+num_actors_for_role <- roles %>%
+                       left_join(actors, by = c("actor_id"="id")) %>%
+                       group_by(role) %>%
+                       summarise(num_actors = sum(gender=="M",na.rm = TRUE))
+
+num_actress_for_role <- roles %>%
+                         left_join(actors, by = c("actor_id"="id")) %>%
+                         group_by(role) %>%
+                         summarise(num_actress = sum(gender=="F",na.rm = TRUE))
+
+num_directores_for_role <- roles %>%
+                          left_join(movies, by = c("movie_id"="id")) %>%
+                         left_join(moviesd, by = "movie_id")%>%
+                         group_by(role) %>%
+                         summarise(num_directores = n())
+
+role_report <- num_movie_for_role %>%
+              left_join(num_actors_for_role, by = "role") %>%
+              left_join(num_actress_for_role, by = "role") %>%
+              left_join(num_directores_for_role, by = "role")%>%
+              arrange((desc(num_movies)))
+
+print("Reporte de roles")
+head(role_report, 10)
+  
+#4
+
+num_movie_for_director <- directors %>%
+                          left_join(moviesd, by = c("id"="director_id")) %>%
+                          group_by(id)%>%
+                          summarise(num_movies = n())
+
+num_actors_for_director <- moviesd %>%
+                          left_join(movies, by =c("movie_id"="id")) %>%
+                          left_join(roles, by ="movie_id") %>%
+                          group_by(director_id) %>%
+                          summarise(num_actors = n_distinct(director_id,actor_id))
+
+director_common_genre <- directorsg %>%
+                        filter(prob == max(prob,na.rm = TRUE)) %>%
+                        group_by(director_id)%>%
+                        summarise(common_genre=paste0(genre,collapse = " "))
+
+directors_information <- directors %>%
+                        left_join(num_movie_for_director, by = "id") %>%
+                        left_join(num_actors_for_director, by = c("id"="director_id")) %>%
+                        left_join(director_common_genre, by = c("id"="director_id")) %>%
+                        arrange(desc(common_genre))
+
+print("Reporte sobre los directores")
+head(directors_information, 10)
+
+#5 
+
+dist_role_movie <- movies %>% 
+  left_join(roles, by = c("id" = "movie_id")) %>%
+  group_by(id) %>%
+  summarise(n_roles = n_distinct(role)) %>% 
+  ungroup() %>%
+  group_by(n_roles) %>%
+  summarise(n_movies = n()) %>% 
+  arrange(n_roles)
+
+
+dist_role_movie %>% 
+  mutate(
+    ratio_pct = round(100.0*n_movies/sum(n_movies),1),
+    ratio_cumulative = cumsum(ratio_pct)
+  ) %>% 
+  head(15)
+  
+
+dist_role_movie %>% 
+  head(15) %>% 
+  plot_ly(x = ~n_roles, y = ~n_movies, type = "bar")
+
+
+
+dist_role_director <- directors %>% 
+  rename(director_id = id) %>%
+  left_join(moviesd, by = "director_id") %>%
+  left_join(movies, by = c("movie_id" = "id")) %>%
+  left_join(roles, by = "movie_id")%>%
+  group_by(director_id) %>%
+  summarise(n_roles = n_distinct(role)) %>% 
+  ungroup() %>%
+  group_by(n_roles) %>%
+  summarise(n_directors = n()) %>% 
+  arrange(n_roles)
+
+
+dist_role_director %>% 
+  mutate(
+    ratio_pct = round(100.0*n_directors/sum(n_directors),1),
+    ratio_cumulative = cumsum(ratio_pct)
+  ) %>% 
+  head(15)
+  
+
+dist_role_director %>% 
+  head(15) %>% 
+  plot_ly(x = ~n_roles, y = ~n_directors, type = "bar")
+```
+
+
