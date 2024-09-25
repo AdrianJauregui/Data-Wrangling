@@ -1,0 +1,177 @@
+---
+title: "dw-2024-parcial-1"
+author: "Tepi"
+date: "25/09/2024"
+output: rmarkdown::github_document
+
+---
+
+
+# Examen parcial
+
+Indicaciones generales:
+
+* Usted tiene el período de la clase para resolver el examen parcial.
+* La entrega del parcial, al igual que las tareas, es por medio de su cuenta de github, pegando el link en el portal de MiU.
+
+
+* Pueden hacer uso del material del curso e internet (stackoverflow, etc.). Sin embargo, si encontramos algún indicio de copia, se anulará el exámen para los estudiantes involucrados. Por lo tanto, aconsejamos no compartir las agregaciones que generen.
+
+## Sección 0: Preguntas de temas vistos en clase (20pts)
+
+* Responda las siguientes preguntas de temas que fueron tocados en clase. 
+
+1. ¿Qué es una ufunc y por qué debemos de utilizarlas cuando programamos trabajando datos?
+Es una función universal la cual opera de manera vectorizada, es decir que trabaja con cada uno de los elementos del array al hacer una operación, al trabajar en R se deben utilizar este tipo de funciones ya que este utiliza un lenguaje vectorizado y es más facíl manjear grandes cantidades de datos
+
+2. Es una técnica en programación numérica que amplía los objetos que son de menor dimensión para que sean compatibles con los de mayor dimensión. Describa cuál es la técnica y de un breve ejemplo en R.
+
+Broadcasting es un metodo el cual permite expandir un array de menor dimensión para que sea compatible con uno de mayor dimension. Por ejemplo al trabajar en R con un vector de 4 elementos y una maztrix de 4x4, R amplia el vector para que coincidan las dimensiones y se pueda operar una suma, resta, multiplicación, etc. 
+
+3. ¿Qué es el axioma de elegibilidad y por qué es útil al momento de hacer análisis de datos? 
+
+Es un axioma el cual establece que cualquiera de las opciones a elegir deben de ser coherentes con los fines a alcanzar. Por ejemplo al analizar datos es importante elegir variables las cuales si sean relevantes y esten conectadas al fin del analisis, en vez de tener muchas variables las cuales dificultan el analisis y no brindan informaicón importante.
+
+
+4. Cuál es la relación entre la granularidad y la agregación de datos? Mencione un breve ejemplo. Luego, exploque cuál es la granularidad o agregación requerida para poder generar un reporte como el siguiente:
+
+|Pais | Usuarios |
+|-----|----------|
+|US   | 1,934    |
+|UK   | 2,133    |
+|DE   | 1,234    |
+|FR   | 4,332    |
+|ROW  | 943      |
+
+La relación está al en que la granularidad define el nivel de detalle de los datos y la agregación es el juntar los datos detallados para brindar una imgen o punto de vista más general sobre ellos y extraer información importante para tomar un decisión. 
+
+La granularidad original de los datos probablemente es del nombre de un usuario, su ID y su país de residencia, y para generar esta tabla se debio reducir la granularidad agrupar a todos los usuarios segun el país en el que residen y contar cuantos usuarios hubieron por país.
+
+
+## Sección I: Preguntas teóricas. (50pts)
+
+* Existen 10 preguntas directas en este Rmarkdown, de las cuales usted deberá responder 5. Las 5 a responder estarán determinadas por un muestreo aleatorio basado en su número de carné.
+
+* Ingrese su número de carné en  `set.seed()` y corra el chunk de R para determinar cuáles preguntas debe responder.
+
+
+```{r, echo=TRUE, cache=TRUE}
+
+set.seed("20220295") 
+v<- 1:10
+preguntas <-sort(sample(v, size = 5, replace = FALSE ))
+
+paste0("Mis preguntas a resolver son: ",paste0(preguntas,collapse = ", "))
+
+```
+#Preguntas a resolver carnet 20220295 son: 2,3,7,8,10
+
+### Listado de preguntas teóricas
+
+
+    
+    
+2. Al momento de filtrar en SQL, ¿cuál keyword cumple las mismas funciones que el keyword `OR`  para filtrar uno o más elementos una misma columna?
+
+La Keyword que puede cumplir la misma función sería "IN" al usar esta palabra damos unas condiciónes en la cual los datos deben de cumplir al menos una para ser incluidos, al igual que "OR" pero esta función es más practica cuando se utilizan varias condiciones ya que solo se escribe "IN" una sola vez en vez de "OR" por cada nueva condición puesta. 
+
+3. ¿Por qué en R utilizamos funciones de la familia apply (lapply,vapply) en lugar de utilizar ciclos?
+
+Apply es una función que se utiliza en R en vez del bucle cotidiano en otros lenguajes de programación. Al utilizar las funciones de apply se utilizan porque son mucho más eficientes para trabajar con vectores y R al utilizar un lenguaje vectorizado hace los procesos más eficientes y a mejor rendimiento, con codigos más simples y faciles de leer. 
+
+7. ¿Qué pasa si quiero agregar una nueva categoría a un factor que no se encuentra en los niveles existentes?
+Si quieres hacer eso en R entonces el valor que devolvería R sería un NA, como el valor no esta incluido en las categorías originales no se reconoce como una parte del factor.
+
+
+8. Si en un dataframe, a una variable de tipo `factor` le agrego un nuevo elemento que *no se encuentra en los niveles existentes*, ¿cuál sería el resultado esperado y por qué?
+    * El nuevo elemento
+    * `NA`
+En ese caso el valor que devolvería sería un "NA", ya que para que un factor reconozca un nuevo elemento este debe de pertenecer a los niveles existentes del factor ya definido.
+
+10. Si quiero obtener como resultado las filas de la tabla A que no se encuentran en la tabla B, ¿cómo debería de completar la siguiente sentencia de SQL?
+
+    * SELECT * FROM A _LEFT JOIN_ B ON A.KEY = B.KEY WHERE _B.KEY_ = _NULL_
+  
+  
+  
+Extra: ¿Cuántos posibles exámenes de 5 preguntas se pueden realizar utilizando como banco las diez acá presentadas?
+(responder con código de R.)
+
+
+## Sección II Preguntas prácticas. (30pts)
+
+
+* Conteste las siguientes preguntas utilizando sus conocimientos de R. Adjunte el código que utilizó para llegar a sus conclusiones en un chunk del markdown.
+
+A. De los clientes que están en más de un país,¿cuál cree que es el más rentable y por qué?
+
+B. Estrategia de negocio ha decidido que ya no operará en aquellos territorios cuyas pérdidas sean "considerables". Bajo su criterio, ¿cuáles son estos territorios y por qué ya no debemos operar ahí?
+
+
+
+
+
+
+
+
+### I. Preguntas practicas 
+
+
+## A
+
+```{r }
+###resuelva acá
+
+dfA <- readRDS("parcial_anonimo.rds")
+library(dplyr)
+
+clientes_paises <- dfA %>% 
+  group_by(Cliente,Pais,`Canal Venta`) %>%
+  summarize(TotalVenta = sum(Venta)) %>%
+  ungroup()
+
+clientes_variosp <- clientes_paises %>%
+  group_by(Cliente) %>%
+  summarize(
+    PaisesDistintos = n_distinct(Pais),
+    Rentabilidad = sum(TotalVenta),
+    Canales = toString(unique(`Canal Venta`))  
+  ) %>%
+  filter(PaisesDistintos > 1)
+
+
+head(clientes_variosp)
+
+
+## Se podria analizar la rentabilidad de cada cliente segun el canal que utilizan para sus ventas 
+
+
+```
+
+
+
+
+## B
+
+```{r }
+###resuelva acá
+
+dfB <- readRDS("parcial_anonimo.rds")
+library(dplyr)
+
+ventas_por_territorio <- dfA %>%
+  group_by(Territorio,Marca,`Canal Venta`) %>%
+  summarize(TotalVenta = sum(Venta)) %>%
+  ungroup()
+
+umbral_bajo <- 50
+
+territorios_perdida <- ventas_por_territorio %>%
+  filter(TotalVenta < 0 | TotalVenta < umbral_bajo) %>%
+  arrange(TotalVenta)
+
+head(territorios_perdida)
+
+#Podemos analizar en que terriotiro dejar de operar segun el numero de perdida que tiene y que canal utiliza para este 
+```
+
