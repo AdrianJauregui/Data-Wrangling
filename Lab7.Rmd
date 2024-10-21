@@ -1,0 +1,127 @@
+---
+title: "Lab 7"
+author: "Adrián Jáuregui"
+date: "2024-10-21"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, cache=TRUE, echo=TRUE, message=FALSE}
+library(readr)
+library(tidyverse)
+library(stringr)
+library(tidytext)
+library(lubridate)
+library(stopwords)
+library(wordcloud)
+
+df <- read_csv("Health_and_Personal_Care.csv")
+
+df$text <- str_replace_all(df$text, pattern = '\\"', replacement = '')
+
+df %>% head()
+
+meta <- read_csv("Health_and_Personal_Care_metadata.csv")
+meta %>% head()
+```
+
+
+
+```{r, cache=TRUE, echo=TRUE, message=FALSE}
+words <- c(
+  "love"
+  ,"recommend"
+  ,"enjoy"
+)
+
+positive_words <- paste(words, collapse = '|')
+
+positive <- df %>%
+  filter(str_detect(string = df$text,pattern = positive_words)) %>% 
+  distinct(product_id)%>%
+  count(name = "products_with_positive_review") 
+
+positive
+```
+
+
+```{r, cache=TRUE, echo=TRUE, message=FALSE}
+filtrados <- df %>%
+  filter(str_detect(string = text, pattern = positive_words)) %>%
+  distinct(product_id,parent_id)
+
+tiendas <- filtrados %>%
+  inner_join(meta, by = "parent_id") %>%
+  filter(!is.na(store)) %>%
+  group_by(store) %>%
+  summarise(total_products = n_distinct(product_id)) %>%
+  arrange(desc(total_products)) %>%
+  slice_max(total_products, n = 5)%>%
+  select(store)
+
+tiendas
+```
+
+
+```{r, cache=TRUE, echo=TRUE, message=FALSE}
+positive2 <- df %>%
+  filter(str_detect(string = df$text,pattern = positive_words)) %>% 
+  distinct(product_id,text)%>%
+  select(text)
+
+stop_words <- c(stopwords(language = "en"), stopwords(language = "es"))
+
+words <- str_split(positive2$text[1:100], boundary("word")) %>% unlist()
+
+no_stopwords <- words %>% 
+  as_tibble() %>% 
+  filter(!(value %in% stop_words)) %>% 
+  group_by(value) %>% 
+  summarise(freq = n())
+
+wordcloud(no_stopwords$value, no_stopwords$freq)
+```
+
+
+```{r, cache=TRUE, echo=TRUE, message=FALSE}
+tiendas <- c("HAARBB","Eyekepper","US Organic","Andaz Press","Generic")
+
+parents <- meta %>%
+  filter(store %in% tiendas) %>%
+  select(parent_id)
+
+tabla <- df %>%
+  inner_join(parents, by = "parent_id") %>%
+  select(text)
+
+words2 <- str_split(tabla$text[1:100], boundary("word")) %>% unlist()
+
+no_stopwords2 <- words2 %>% 
+  as_tibble() %>% 
+  filter(!(value %in% stop_words)) %>% 
+  group_by(value) %>% 
+  summarise(freq = n())
+
+wordcloud(no_stopwords2$value, no_stopwords2$freq)
+```
+
+
+```{r, cache=TRUE, echo=TRUE, message=FALSE}
+general <- str_split(df$text, boundary("word")) %>%
+  unlist()
+
+no_stopwords3 <- general %>%
+  as_tibble() %>%
+  filter(!(value %in% stop_words)) %>%
+  group_by(value) %>%
+  summarise(freq = n()) %>%
+  arrange(desc(freq)) 
+
+general_25 <- no_stopwords3 %>%
+  slice_max(freq, n = 25)
+
+general_25
+```
