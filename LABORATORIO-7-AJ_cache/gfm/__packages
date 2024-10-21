@@ -1,0 +1,14 @@
+readr
+tidyverse
+ggplot2
+tibble
+tidyr
+purrr
+dplyr
+stringr
+forcats
+lubridate
+tidytext
+stopwords
+RColorBrewer
+wordcloud
